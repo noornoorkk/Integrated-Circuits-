@@ -1,0 +1,61 @@
+*** SPICE deck for cell FlipFlop{sch} from library 1220769-1221769-1220137-cmos
+*** Created on Thu Dec 12, 2024 23:39:22
+*** Last revised on Sun Jun 15, 2025 21:56:13
+*** Written on Tue Jun 17, 2025 10:57:48 by Electric VLSI Design System, version 9.08
+*** Layout tech: mocmos, foundry MOSIS
+*** UC SPICE *** , MIN_RESIST 4.0, MIN_CAPAC 0.1FF
+
+*** SUBCIRCUIT notGate__inverter FROM CELL notGate:inverter{sch}
+.SUBCKT notGate__inverter gnd in
+** GLOBAL gnd
+** GLOBAL vdd
+Mnmos@0 gnd in gnd gnd NMOS L=0.224U W=1.8U
+Mpmos@0 vdd in gnd vdd PMOS L=0.224U W=1.8U
+.ENDS notGate__inverter
+
+.global gnd vdd
+
+*** TOP LEVEL CELL: FlipFlop{sch}
+Mnmos@0 net@2 gnd gnd gnd NMOS L=0.032U W=0.032U
+Mnmos@1 net@2 clk net@14 gnd NMOS L=0.032U W=0.032U
+Mnmos@2 gnd gnd net@14 gnd NMOS L=0.032U W=0.032U
+Mnmos@3 net@45 clk gnd gnd NMOS L=0.032U W=0.032U
+Mnmos@4 net@45 gnd net@55 gnd NMOS L=0.032U W=0.032U
+Mnmos@5 gnd gnd net@55 gnd NMOS L=0.032U W=0.032U
+Mpmos@0 gnd clk net@2 vdd PMOS L=0.032U W=0.128U
+Mpmos@1 net@4 gnd vdd vdd PMOS L=0.032U W=0.032U
+Mpmos@2 net@4 gnd net@2 vdd PMOS L=0.032U W=0.032U
+Mpmos@3 gnd gnd net@45 vdd PMOS L=0.032U W=0.128U
+Mpmos@4 net@41 gnd vdd vdd PMOS L=0.032U W=0.032U
+Mpmos@5 net@41 clk net@45 vdd PMOS L=0.032U W=0.032U
+Xinverter@0 gnd D notGate__inverter
+Xinverter@1 gnd clk notGate__inverter
+Xinverter@2 gnd net@2 notGate__inverter
+Xinverter@3 gnd gnd notGate__inverter
+Xinverter@5 gnd clk notGate__inverter
+Xinverter@6 gnd net@45 notGate__inverter
+Xinverter@7 gnd net@45 notGate__inverter
+
+* Spice Code nodes in cell cell 'FlipFlop{sch}'
+.include "C:\Users\Lenovo\Desktop\16_model.txt"
+* Power supply
+Vdd vdd 0 DC 0.85
+* Clock and Input
+Vclk clk 0 PULSE(0 0.85 0n 100p 100p 10n 20n)
+Vin D 0 PWL(0ns 0 5ns 0.85 13ns 0.85 15ns 0 25ns 0 27ns 0.85 42ns 0.85 44ns 0 75ns 0 80ns 0.85)
+* Load capacitors
+Cq Q 0 3f
+Cclk clk 0 3f
+* Transient simulation
+.tran 0.01ns 0.1us
+.measure td     TRIG V(clk) VAL=0.35 RISE=1 TARG V(Q) VAL=0.35 RISE=1
+.measure trise  TRIG V(Q)   VAL=0.07 RISE=1 TARG V(Q)   VAL=0.63 RISE=1
+.measure tfall  TRIG V(Q)   VAL=0.63 FALL=1 TARG V(Q)   VAL=0.07 FALL=1
+.measure TRAN idd_avg AVG I(Vdd)
+.measure TRAN vdd_avg AVG V(vdd)
+* Optional: keep energy if you want
+.measure TRAN energy INTEG I(Vdd)*V(vdd)
+* Probes for waveform inspection
+.probe V(Q) V(Q_) V(D) V(clk) V(vdd) I(Vdd)
+.END
+.END

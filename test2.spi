@@ -1,0 +1,47 @@
+*** SPICE deck for cell test2{sch} from library 1220769-1221769-1220137-GDI
+*** Created on Tue Jun 10, 2025 17:25:04
+*** Last revised on Tue Jun 17, 2025 10:57:32
+*** Written on Tue Jun 17, 2025 10:57:35 by Electric VLSI Design System, version 9.08
+*** Layout tech: mocmos, foundry MOSIS
+*** UC SPICE *** , MIN_RESIST 4.0, MIN_CAPAC 0.1FF
+
+*** SUBCIRCUIT notGate__inverter FROM CELL notGate:inverter{sch}
+.SUBCKT notGate__inverter gnd in
+** GLOBAL gnd
+** GLOBAL vdd
+Mnmos@0 gnd in gnd gnd NMOS L=0.224U W=1.8U
+Mpmos@0 vdd in gnd vdd PMOS L=0.224U W=1.8U
+.ENDS notGate__inverter
+
+.global gnd vdd
+
+*** TOP LEVEL CELL: 1220769-1221769-1220137-GDI:test2{sch}
+Mnmos@0 net@146 clk gnd gnd NMOS L=0.032U W=0.16U
+Mnmos@1 net@181 clk gnd gnd NMOS L=0.032U W=0.16U
+Mpmos@0 D clk net@146 vdd PMOS L=0.032U W=0.32U
+Mpmos@1 gnd clk net@181 vdd PMOS L=0.032U W=0.32U
+Xinverter@2 gnd net@146 notGate__inverter
+Xinverter@3 gnd gnd notGate__inverter
+Xinverter@5 gnd gnd notGate__inverter
+Xinverter@9 gnd net@181 notGate__inverter
+
+* Spice Code nodes in cell cell '1220769-1221769-1220137-GDI:test2{sch}'
+.include "C:\Users\Lenovo\Desktop\16_model.txt"
+.include "C:\Users\Lenovo\Desktop\my_gdi_dff.spi"  ; Your actual flip-flop netlist
+Vdd vdd 0 DC 0.7
+Vclk clk 0 PULSE(0 0.7 0ns 1ns 1ns 10ns 20ns)
+Vin D 0 PWL(0ns 0 5ns 0.7 13ns 0.7 15ns 0 25ns 0 28ns 0.7 42ns 0.7 45ns 0 75ns 0 80ns 0.7)
+* Instantiate your GDI D Flip-Flop
+X1 D clk Q Qb vdd 0 gdi_dff
+Cq Q 0 1fF
+Cc clk 0 1fF
+.tran 0.01ns 0.1us
+.measure td_rise TRIG V(clk) VAL=0.35 RISE=1 TARG V(Q) VAL=0.35 RISE=1
+.measure td_fall TRIG V(clk) VAL=0.35 RISE=1 TARG V(Q) VAL=0.35 FALL=1
+.measure trise  TRIG V(Q) VAL=0.07 RISE=1 TARG V(Q) VAL=0.63 RISE=1
+.measure tfall  TRIG V(Q) VAL=0.63 FALL=1 TARG V(Q) VAL=0.07 FALL=1
+.measure TRAN idd_avg AVG I(Vdd)
+.measure TRAN vdd_avg AVG V(vdd)
+.probe V(Q) V(Qb) V(D) V(clk) V(vdd) I(Vdd)
+.END
+.END
